@@ -127,16 +127,144 @@ def dashboard():
     top_ips = sorted(stats["ip_fails"].items(), key=lambda x: x[1], reverse=True)[:5]
 
     html = """
-    <h2>Sentinel Security Dashboard</h2>
-    <p>Total Attempts: {{ stats.total }}</p>
-    <p>Successful Logins: {{ stats.success }}</p>
-    <p>Failed Logins: {{ stats.failed }}</p>
-    <h3>Top IPs with Failed Attempts</h3>
-    <ul>
-      {% for ip, count in top_ips %}
-        <li>{{ ip }} — {{ count }} failed attempt(s)</li>
-      {% endfor %}
-    </ul>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        background-color: #0a0a0a;
+        color: #00ff41;
+        font-family: 'Share Tech Mono', monospace;
+        padding: 40px;
+      }
+
+      h2 {
+        font-size: 1.8rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #00ff41;
+        padding-bottom: 12px;
+        margin-bottom: 30px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        margin-bottom: 40px;
+      }
+
+      .card {
+        border: 1px solid #00ff4155;
+        padding: 20px;
+        background: #0f0f0f;
+      }
+
+      .card .label {
+        font-size: 0.7rem;
+        letter-spacing: 3px;
+        color: #888;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+      }
+
+      .card .value {
+        font-size: 2.5rem;
+        font-weight: bold;
+      }
+
+      .card.danger .value { color: #ff3333; }
+      .card.success .value { color: #00ff41; }
+      .card.neutral .value { color: #ffffff; }
+
+      h3 {
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #888;
+        margin-bottom: 15px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-align: left;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        color: #555;
+        text-transform: uppercase;
+        padding: 8px 12px;
+        border-bottom: 1px solid #1a1a1a;
+      }
+
+      td {
+        padding: 10px 12px;
+        border-bottom: 1px solid #111;
+        font-size: 0.9rem;
+      }
+
+      tr:hover td { background: #111; }
+
+      .badge {
+        display: inline-block;
+        padding: 2px 8px;
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        background: #ff333322;
+        color: #ff3333;
+        border: 1px solid #ff333355;
+      }
+
+      .footer {
+        margin-top: 40px;
+        font-size: 0.7rem;
+        color: #333;
+        letter-spacing: 2px;
+      }
+    </style>
+
+    <h2>⬡ Sentinel // Security Dashboard</h2>
+
+    <div class="grid">
+      <div class="card neutral">
+        <div class="label">Total Attempts</div>
+        <div class="value">{{ stats.total }}</div>
+      </div>
+      <div class="card success">
+        <div class="label">Successful Logins</div>
+        <div class="value">{{ stats.success }}</div>
+      </div>
+      <div class="card danger">
+        <div class="label">Failed Logins</div>
+        <div class="value">{{ stats.failed }}</div>
+      </div>
+    </div>
+
+    <h3>Top IPs // Failed Attempts</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>IP Address</th>
+          <th>Failed Attempts</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ip, count in top_ips %}
+        <tr>
+          <td>{{ ip }}</td>
+          <td>{{ count }}</td>
+          <td><span class="badge">SUSPICIOUS</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="footer">SENTINEL v1.0 // ADMIN ACCESS ONLY // {{ stats.total }} EVENTS LOGGED</div>
     """
     return render_template_string(html, stats=stats, top_ips=top_ips)
 
