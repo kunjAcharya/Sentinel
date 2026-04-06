@@ -87,4 +87,4 @@ Most beginner auth tutorials store passwords in plain text and check roles with 
 
 ---
 
-*Built as part of a cybersecurity portfolio — Kunj Patel, Bachelor of IT (Cybersecurity), CQU Melbourne*
+*Built as part of a cybersecurity portfolio — Kunj Acharya, Bachelor of IT (Cybersecurity), CQU Melbourne*
