@@ -2,3 +2,6 @@
 2026-04-06 22:16:32,185 | INFO | SUCCESS_LOGIN user=admin role=admin ip=127.0.0.1
 2026-04-06 22:17:08,438 | INFO | SUCCESS_LOGIN user=staff role=staff ip=127.0.0.1
 2026-04-06 22:17:31,585 | INFO | SUCCESS_LOGIN user=user role=user ip=127.0.0.1
+2026-04-06 23:25:18,316 | INFO | SUCCESS_LOGIN user=admin role=admin ip=127.0.0.1
+2026-04-06 23:27:17,051 | INFO | SUCCESS_LOGIN user=admin role=admin ip=127.0.0.1
+2026-04-06 23:30:10,655 | WARNING | FAILED_LOGIN user=sawdd ip=127.0.0.1

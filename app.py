@@ -101,6 +101,45 @@ def logout():
     return redirect(url_for("home"))
 
 @app.route("/admin")
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    if current_user.role != "admin":
+        return "Forbidden", 403
+
+    stats = {"total": 0, "failed": 0, "success": 0, "ip_fails": {}}
+
+    try:
+        with open("logs/security.log", "r") as f:
+            for line in f:
+                if "FAILED_LOGIN" in line:
+                    stats["total"] += 1
+                    stats["failed"] += 1
+                    ip = line.split("ip=")[-1].strip()
+                    stats["ip_fails"][ip] = stats["ip_fails"].get(ip, 0) + 1
+                elif "SUCCESS_LOGIN" in line:
+                    stats["total"] += 1
+                    stats["success"] += 1
+    except FileNotFoundError:
+        pass
+
+    top_ips = sorted(stats["ip_fails"].items(), key=lambda x: x[1], reverse=True)[:5]
+
+    html = """
+    <h2>Sentinel Security Dashboard</h2>
+    <p>Total Attempts: {{ stats.total }}</p>
+    <p>Successful Logins: {{ stats.success }}</p>
+    <p>Failed Logins: {{ stats.failed }}</p>
+    <h3>Top IPs with Failed Attempts</h3>
+    <ul>
+      {% for ip, count in top_ips %}
+        <li>{{ ip }} — {{ count }} failed attempt(s)</li>
+      {% endfor %}
+    </ul>
+    """
+    return render_template_string(html, stats=stats, top_ips=top_ips)
+
 @login_required
 def admin():
     if current_user.role != "admin":
