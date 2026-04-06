@@ -68,13 +68,118 @@ def home():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     login_html = """
-    <h2>Login</h2>
-    <form method="post">
-      <input name="username" placeholder="username"/><br/>
-      <input name="password" type="password" placeholder="password"/><br/>
-      <button type="submit">Login</button>
-    </form>
-    <p style="color:red;">{{ msg }}</p>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      body {
+        background-color: #0a0a0a;
+        color: #00ff41;
+        font-family: 'Share Tech Mono', monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        border: 1px solid #00ff4155;
+        padding: 40px;
+        width: 360px;
+        background: #0f0f0f;
+      }
+
+      .logo {
+        font-size: 1.4rem;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .subtitle {
+        font-size: 0.65rem;
+        letter-spacing: 3px;
+        color: #444;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #1a1a1a;
+        padding-bottom: 20px;
+      }
+
+      label {
+        font-size: 0.65rem;
+        letter-spacing: 3px;
+        color: #555;
+        text-transform: uppercase;
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      input {
+        width: 100%;
+        background: #0a0a0a;
+        border: 1px solid #1f1f1f;
+        color: #00ff41;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.9rem;
+        padding: 10px 12px;
+        margin-bottom: 20px;
+        outline: none;
+        transition: border 0.2s;
+      }
+
+      input:focus {
+        border-color: #00ff4166;
+      }
+
+      button {
+        width: 100%;
+        background: transparent;
+        border: 1px solid #00ff41;
+        color: #00ff41;
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 0.8rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        padding: 12px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      button:hover {
+        background: #00ff4111;
+      }
+
+      .error {
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        color: #ff3333;
+        margin-top: 16px;
+        min-height: 16px;
+      }
+
+      .blink {
+        animation: blink 1s step-end infinite;
+      }
+
+      @keyframes blink {
+        50% { opacity: 0; }
+      }
+    </style>
+
+    <div class="container">
+      <div class="logo">⬡ Sentinel</div>
+      <div class="subtitle">Secure Access Portal <span class="blink">_</span></div>
+      <form method="post">
+        <label>Username</label>
+        <input name="username" autocomplete="off" autofocus/>
+        <label>Password</label>
+        <input name="password" type="password"/>
+        <button type="submit">Authenticate</button>
+      </form>
+      <div class="error">{{ msg }}</div>
+    </div>
     """
     if request.method == "POST":
         username = request.form["username"]
@@ -147,6 +252,14 @@ def dashboard():
     except FileNotFoundError:
         pass
 
+    feed = []
+    try:
+        with open("logs/security.log", "r") as f:
+            lines = f.readlines()
+            feed = [l.strip() for l in lines[-20:]][::-1]
+    except FileNotFoundError:
+        pass
+
     top_ips = sorted(stats["ip_fails"].items(), key=lambda x: x[1], reverse=True)[:5]
 
     dashboard_html = """
@@ -205,8 +318,20 @@ def dashboard():
     {% else %}
     <p style="color:#555;font-size:0.8rem;letter-spacing:2px;">NO ACTIVE LOCKS</p>
     {% endif %}
-    """
-    return render_template_string(dashboard_html, stats=stats, top_ips=top_ips, locked_ips=locked_ips)
+    <h3 style="margin-top:40px;">Live Event Feed // Last 20 Events</h3>
+<div id="feed" style="background:#0f0f0f;border:1px solid #00ff4122;padding:20px;font-size:0.75rem;line-height:2;">
+  {% for entry in feed %}
+    <div style="color:{% if 'FAILED' in entry %}#ff3333{% elif 'LOCKED' in entry or 'BLOCKED' in entry %}#ff9900{% else %}#00ff41{% endif %};">
+      > {{ entry }}
+    </div>
+  {% endfor %}
+</div>
+<script>
+  setTimeout(function(){ location.reload(); }, 10000);
+</script>
+   """
+    return render_template_string(dashboard_html, stats=stats, top_ips=top_ips, locked_ips=locked_ips, feed=feed)
+
 if __name__ == "__main__":
     init_db()
     app.run(debug=True)
