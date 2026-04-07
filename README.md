@@ -1,6 +1,4 @@
-Here you go:
 
-```markdown
 # Sentinel
 
 A Flask-based authentication system built with real security principles, not just functionality. Sentinel demonstrates how access control, threat detection, and security monitoring work together in a production-minded application.
@@ -104,6 +102,3 @@ Change these credentials before any real deployment.
 ---
 
 *Built as part of a cybersecurity portfolio — Kunj Acharya, Bachelor of IT (Cybersecurity), CQU Melbourne*
-```
-
-Copy the whole thing, replace your existing README.md, push it. Done.
